@@ -26,20 +26,6 @@ RECIPEZ is a community-driven recipe sharing web platform where users can browse
 
 ---
 
-## Lab Coverage
-
-| Lab | Topic | Covered In |
-|-----|-------|-----------|
-| Lab 01 | HTML – tags, headings, paragraphs, images, hyperlinks, lists, tables | All HTML files |
-| Lab 02 | CSS – inline, embedded, external; color, font-family, font-size, border, padding, margin | styles.css + HTML files |
-| Lab 03 | JS Basics – variables (var/let/const), DOM, innerHTML, alert, console.log | main.js |
-| Lab 04 | JS Operators – arithmetic, comparison, logical; if/else/nested-if/if-else-if ladder | main.js |
-| Lab 05 | JS Loops (for/while/do-while), Functions | main.js |
-| Lab 06 | JS Arrays, Objects, Strings | main.js |
-| Lab 07 | PHP Basics (referenced in comments) | main.js comments |
-
----
-
 ## JavaScript Features (Project Requirements)
 
 1. ✅ Dynamic Content Updates – Live search, filter buttons
@@ -86,4 +72,3 @@ recipez/
 - **HTML5** – Semantic structure (Lab 01)
 - **CSS3** – External, embedded, inline (Lab 02)
 - **JavaScript (Vanilla)** – DOM, arrays, objects, loops, functions (Lab 03–06)
-- No frameworks – pure HTML/CSS/JS as per lab requirements
