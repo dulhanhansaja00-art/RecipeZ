@@ -6,6 +6,12 @@
   <title>Add Recipe | RECIPEZ</title>
   <link rel="stylesheet" href="css/styles.css?v=10">
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    .char-counter { font-size:12px; color:#5a7a5a; text-align:right; margin-top:4px; }
+    .form-hint    { font-size:12px; color:#888; margin-top:4px; }
+    #authNotice   { background:#fff3e0; border:1px solid #ffcc80; border-radius:8px; padding:14px 18px; margin-bottom:24px; color:#e65100; font-size:14px; }
+    #authNotice a { color:#e65100; font-weight:700; }
+  </style>
 </head>
 <body>
 
@@ -17,118 +23,210 @@
     <li><a href="popular.html">Popular</a></li>
     <li><a href="#" onclick="openSearch(); return false;">🔍 Search</a></li>
     <li><a href="add-recipe.html" class="btn-add active">✍️ Add Recipe</a></li>
-    <li><a href="login.html" class="btn-login">👤 Login</a></li>
+    <li><a href="login.html" class="btn-login" id="navLoginBtn">👤 Login</a></li>
+    <li><a href="contact.html">📬 Contact</a></li>
+<li><a href="login.html" class="btn-login" id="navLoginBtn">👤 Login</a></li>
   </ul>
   <button class="hamburger" onclick="toggleMenu()">☰</button>
 </nav>
 
-<!-- PAGE HEADER -->
-<section style="background:linear-gradient(135deg,#1b5e20,#558b2f); padding:40px; text-align:center;">
-  <h1 style="font-family:'Playfair Display',serif; font-size:44px; color:#fff; margin-bottom:10px;">✍️ Add Your Recipe</h1>
-  <p style="color:#d4efd4; font-size:17px;">Share your favourite dish with the RECIPEZ community</p>
+<section style="background:linear-gradient(135deg,#1b5e20,#558b2f);padding:40px;text-align:center;">
+  <h1 style="font-family:'Playfair Display',serif;font-size:44px;color:#fff;margin-bottom:10px;">✍️ Add Your Recipe</h1>
+  <p style="color:#d4efd4;font-size:17px;">Share your favourite dish with the RECIPEZ community</p>
 </section>
 
-<!-- ADD RECIPE FORM (Lab 01: HTML Form, Lab 04: JS validation) -->
 <section class="section">
-
-  <!-- Lab 02: Embedded CSS in <style> block (Lab 02 Step 2) -->
-  <style>
-    /* Lab 02: Embedded CSS - styling specific to this page */
-    .char-counter { font-size: 12px; color: #5a7a5a; text-align: right; margin-top: 4px; }
-    .form-hint    { font-size: 12px; color: #888; margin-top: 4px; }
-  </style>
-
   <div class="form-wrap">
     <h2>New Recipe</h2>
 
-    <!-- Lab 01: HTML Form - no <form> tag needed, using div + JS -->
-    <div>
-
-      <!-- Recipe Name -->
-      <div class="form-group">
-        <label for="recipeName">Recipe Name *</label>
-        <!-- Lab 01: input element -->
-        <input type="text" id="recipeName" placeholder="e.g. Spicy Chicken Curry"
-               oninput="hideError('nameError')" maxlength="80">
-        <div class="error-msg" id="nameError">Recipe name is required.</div>
-        <div class="form-hint">Enter a clear, descriptive name for your recipe.</div>
-      </div>
-
-      <!-- Category Dropdown (Lab 01: select element) -->
-      <div class="form-group">
-        <label for="recipeCategory">Category *</label>
-        <select id="recipeCategory" onchange="hideError('categoryError')">
-          <option value="">-- Select Category --</option>
-          <!-- Lab 01: option elements -->
-          <option value="Breakfast">🥞 Breakfast</option>
-          <option value="Lunch">🥗 Lunch</option>
-          <option value="Dinner">🍽️ Dinner</option>
-          <option value="Desserts">🍰 Desserts</option>
-          <option value="Drinks">🥤 Drinks</option>
-          <option value="Appetizers">🥙 Appetizers</option>
-          <option value="BBQ">🔥 BBQ</option>
-          <option value="Quick & Easy">⚡ Quick &amp; Easy</option>
-          <option value="Side Dish">🥦 Side Dish</option>
-          <option value="Shortiest">⏱️ Shortiest</option>
-        </select>
-        <div class="error-msg" id="categoryError">Please select a category.</div>
-      </div>
-
-      <!-- Cook Time -->
-      <div class="form-group">
-        <label for="cookTime">Cook Time</label>
-        <input type="text" id="cookTime" placeholder="e.g. 30 min">
-      </div>
-
-      <!-- YouTube Link -->
-      <div class="form-group">
-        <label for="youtubeLink">YouTube Video Link (optional)</label>
-        <input type="url" id="youtubeLink" placeholder="https://www.youtube.com/watch?v=10...">
-        <div class="form-hint">Paste a YouTube link for your recipe video.</div>
-      </div>
-
-      <!-- Recipe Content (Lab 01: textarea) -->
-      <div class="form-group">
-        <label for="recipeContent">Recipe Content (Ingredients + Steps) *</label>
-        <textarea id="recipeContent" placeholder="List your ingredients and steps here..."
-                  oninput="updateCharCount(); hideError('contentError')" rows="8"></textarea>
-        <div class="char-counter"><span id="charCount">0</span> / 2000 characters</div>
-        <div class="error-msg" id="contentError">Please enter at least 20 characters.</div>
-      </div>
-
-      <!-- SUBMIT (Lab 04: if-else validation, Lab 03: onclick, Lab 03: alert) -->
-      <button class="btn btn-primary" onclick="return validateAddRecipeForm()" style="width:100%; font-size:17px; padding:16px;">
-        🍴 Submit Recipe
-      </button>
-
-      <p style="text-align:center; margin-top:16px; font-size:13px; color:#888;">
-        On submit you'll be redirected to the Home page.
-      </p>
-
+    <!-- Auth notice (shown if not logged in) -->
+    <div id="authNotice" style="display:none;">
+      ⚠️ You need to <a href="login.html">log in</a> or <a href="register.html">create an account</a> to add a recipe.
     </div>
-  </div>
 
+    <!-- Recipe Name -->
+    <div class="form-group">
+      <label for="recipeName">Recipe Name *</label>
+      <input type="text" id="recipeName" placeholder="e.g. Spicy Chicken Curry"
+             oninput="hideError('nameError')" maxlength="80">
+      <div class="error-msg" id="nameError">Recipe name is required.</div>
+      <div class="form-hint">Enter a clear, descriptive name for your recipe.</div>
+    </div>
+
+    <!-- Category -->
+    <div class="form-group">
+      <label for="recipeCategory">Category *</label>
+      <select id="recipeCategory" onchange="hideError('categoryError')">
+        <option value="">-- Select Category --</option>
+        <option value="Breakfast">🥞 Breakfast</option>
+        <option value="Lunch">🥗 Lunch</option>
+        <option value="Dinner">🍽️ Dinner</option>
+        <option value="Desserts">🍰 Desserts</option>
+        <option value="Drinks">🥤 Drinks</option>
+        <option value="Appetizers">🥙 Appetizers</option>
+        <option value="BBQ">🔥 BBQ</option>
+        <option value="Quick &amp; Easy">⚡ Quick &amp; Easy</option>
+        <option value="Side Dish">🥦 Side Dish</option>
+        <option value="Shortiest">⏱️ Shortiest</option>
+      </select>
+      <div class="error-msg" id="categoryError">Please select a category.</div>
+    </div>
+
+    <!-- Cook Time -->
+    <div class="form-group">
+      <label for="cookTime">Cook Time</label>
+      <input type="text" id="cookTime" placeholder="e.g. 30 min">
+    </div>
+
+    <!-- YouTube Link -->
+    <div class="form-group">
+      <label for="youtubeLink">YouTube Video Link</label>
+      <input type="url" id="youtubeLink" placeholder="https://www.youtube.com/watch?v=...">
+      <div class="form-hint">Optional — paste a YouTube URL for a tutorial video.</div>
+    </div>
+
+    <!-- Image URL -->
+    <div class="form-group">
+      <label for="imageUrl">Image URL</label>
+      <input type="url" id="imageUrl" placeholder="https://example.com/my-dish.jpg">
+      <div class="form-hint">Optional — paste a direct link to a photo of your dish.</div>
+    </div>
+
+    <!-- Ingredients -->
+    <div class="form-group">
+      <label for="ingredientsField">Ingredients *</label>
+      <textarea id="ingredientsField" rows="6" placeholder="One ingredient per line, e.g.&#10;Flour – 2 cups&#10;Eggs – 2&#10;Milk – 1 cup"
+                oninput="hideError('contentError')"></textarea>
+      <div class="error-msg" id="contentError">Please enter at least one ingredient.</div>
+      <div class="form-hint">One ingredient per line.</div>
+    </div>
+
+    <!-- Steps -->
+    <div class="form-group">
+      <label for="stepsField">Steps *</label>
+      <textarea id="stepsField" rows="6" placeholder="One step per line, e.g.&#10;Mix flour and eggs.&#10;Add milk gradually.&#10;Cook on medium heat."
+                oninput="hideError('stepsError')"></textarea>
+      <div class="error-msg" id="stepsError">Please enter at least one step.</div>
+      <div class="form-hint">One step per line. Keep it clear and short.</div>
+    </div>
+
+    <!-- Error / Success messages -->
+    <div id="formError"   style="color:#c62828;background:#fce4ec;border:1px solid #ef9a9a;border-radius:8px;padding:12px;margin-bottom:16px;display:none;"></div>
+    <div id="formSuccess" style="color:#2e7d32;background:#e8f5e9;border:1px solid #c8e6c9;border-radius:8px;padding:12px;margin-bottom:16px;display:none;"></div>
+
+    <button class="btn btn-primary" id="submitBtn" onclick="submitRecipe()"
+            style="width:100%;font-size:16px;padding:14px;">
+      🍽️ Submit Recipe
+    </button>
+  </div>
 </section>
 
-<!-- FOOTER -->
-<footer>
-  <p><strong style="color:#fff;">RECIPE<span style="color:#f9a825;">Z</span></strong> — Community Recipe Sharing Platform</p>
-  <p style="margin-top:8px;"><a href="index.html">Home</a> &nbsp;|&nbsp; <a href="categories.html">Categories</a> &nbsp;|&nbsp; <a href="popular.html">Popular</a></p>
-  <p class="footer-credits">ICT 2204 – Web Technologies &nbsp;|&nbsp; Rajarata University of Sri Lanka<br>ICT/2023/047 &amp; ICT/2023/008</p>
-</footer>
-
 <button id="backToTop" title="Back to Top">↑</button>
-
 <div class="search-overlay" id="searchOverlay" onclick="if(event.target===this)closeSearch()">
   <div class="search-box">
-    <h3 style="margin-bottom:16px;color:#1b5e20;font-family:'Playfair Display',serif;">🔍 Search Recipes</h3>
+    <button class="search-close" onclick="closeSearch()">✕</button>
     <input type="text" id="searchInput" placeholder="Search recipes..." oninput="doSearch()">
-    <ul class="search-results-list" id="searchResultsList"><li style="color:#aaa;padding:12px">Type to search...</li></ul>
-    <button class="btn btn-primary" onclick="closeSearch()" style="margin-top:12px;width:100%;">Close</button>
+    <ul class="search-results-list" id="searchResultsList"></ul>
   </div>
 </div>
 
+<script src="js/api.js"></script>
 <script src="js/main.js?v=10"></script>
+<script>
+// Check login status on load
+(async () => {
+  const me = await apiMe();
+  if (!me.loggedIn) {
+    document.getElementById('authNotice').style.display = 'block';
+    document.getElementById('submitBtn').disabled = true;
+    document.getElementById('submitBtn').style.opacity = '0.5';
+  } else {
+    // Update nav to show username
+    const navBtn = document.getElementById('navLoginBtn');
+    if (navBtn) {
+      navBtn.textContent = '👤 ' + me.user.username;
+      navBtn.href = '#';
+      navBtn.onclick = () => { apiLogout(); return false; };
+    }
+  }
+})();
 
+async function submitRecipe() {
+  const name        = document.getElementById('recipeName').value.trim();
+  const category    = document.getElementById('recipeCategory').value;
+  const cookTime    = document.getElementById('cookTime').value.trim();
+  const youtubeRaw  = document.getElementById('youtubeLink').value.trim();
+  const imageUrl    = document.getElementById('imageUrl').value.trim();
+  const ingLines    = document.getElementById('ingredientsField').value.trim();
+  const stepLines   = document.getElementById('stepsField').value.trim();
+  const errEl       = document.getElementById('formError');
+  const okEl        = document.getElementById('formSuccess');
+  const btn         = document.getElementById('submitBtn');
+
+  errEl.style.display = 'none';
+  okEl.style.display  = 'none';
+
+  // Validation
+  if (!name)      { showFieldError('nameError');     return; }
+  if (!category)  { showFieldError('categoryError'); return; }
+  if (!ingLines)  { showFieldError('contentError');  return; }
+  if (!stepLines) { showFieldError('stepsError');    return; }
+
+  // Convert YouTube watch URL → embed URL
+  let youtubeUrl = youtubeRaw;
+  if (youtubeRaw.includes('youtube.com/watch?v=')) {
+    const v = new URL(youtubeRaw).searchParams.get('v');
+    if (v) youtubeUrl = 'https://www.youtube.com/embed/' + v;
+  } else if (youtubeRaw.includes('youtu.be/')) {
+    const v = youtubeRaw.split('youtu.be/')[1]?.split('?')[0];
+    if (v) youtubeUrl = 'https://www.youtube.com/embed/' + v;
+  }
+
+  // Parse ingredients: each line becomes [name, amount] splitting on ' – ' or ' - '
+  const ingredients = ingLines.split('\n')
+    .map(l => l.trim()).filter(Boolean)
+    .map(l => {
+      const parts = l.split(/\s[–-]\s/);
+      return parts.length >= 2 ? [parts[0], parts.slice(1).join(' - ')] : [l, ''];
+    });
+
+  const steps = stepLines.split('\n').map(l => l.trim()).filter(Boolean);
+
+  btn.disabled    = true;
+  btn.textContent = 'Submitting…';
+
+  try {
+    const result = await apiAddRecipe({
+      name, category, cook_time: cookTime,
+      youtube_url: youtubeUrl, image_url: imageUrl,
+      ingredients, steps,
+    });
+
+    if (result.success) {
+      okEl.textContent  = '✅ Recipe added! Redirecting to your recipe…';
+      okEl.style.display = 'block';
+      setTimeout(() => {
+        window.location.href = 'recipe.html?id=' + result.recipe_id;
+      }, 1500);
+    } else {
+      errEl.textContent  = '❌ ' + (result.error || 'Submission failed.');
+      errEl.style.display = 'block';
+    }
+  } catch (e) {
+    errEl.textContent  = '❌ Could not reach server.';
+    errEl.style.display = 'block';
+  } finally {
+    btn.disabled    = false;
+    btn.textContent = '🍽️ Submit Recipe';
+  }
+}
+
+function showFieldError(id) {
+  document.getElementById(id)?.classList.add('show');
+}
+function hideError(id) {
+  document.getElementById(id)?.classList.remove('show');
+}
+</script>
 </body>
 </html>

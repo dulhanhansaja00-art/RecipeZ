@@ -7,7 +7,7 @@
   <!-- Lab 01: title tag -->
   <title>RECIPEZ – Home</title>
   <!-- Lab 02: External CSS (Step 3) -->
-  <link rel="stylesheet" href="css/styles.css?v=10">
+  <link rel="stylesheet" href="css/styles.css?v=11">
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 </head>
 <body>
@@ -23,6 +23,7 @@
     <!-- Lab 03: onclick event -->
     <li><a href="#" onclick="openSearch(); return false;">🔍 Search</a></li>
     <li><a href="add-recipe.html" class="btn-add">✍️ Add Recipe</a></li>
+    <li><a href="contact.html">📬 Contact</a></li>
     <li><a href="login.html" class="btn-login">👤 Login</a></li>
   </ul>
   <!-- Lab 03: onclick DOM event -->
@@ -65,7 +66,6 @@
 
 <!-- LATEST RECIPES (Lab 06: array rendered by JS) -->
 <section class="section section-alt">
-  <!-- Lab 02: Embedded CSS shown in <style> below -->
   <h2 class="section-title">Latest Recipes</h2>
   <p class="section-sub">Fresh additions to the RECIPEZ collection</p>
   <div class="divider"></div>
@@ -105,6 +105,7 @@
     <a href="categories.html">Categories</a> &nbsp;|&nbsp;
     <a href="popular.html">Popular</a> &nbsp;|&nbsp;
     <a href="add-recipe.html">Add Recipe</a> &nbsp;|&nbsp;
+    <a href="contact.html">Contact</a> &nbsp;|&nbsp;
     <a href="login.html">Login</a>
   </p>
   <p class="footer-credits">
@@ -130,7 +131,96 @@
   </div>
 </div>
 
-<!-- Lab 02: External CSS linked above, Lab 03: External JS -->
-<script src="js/main.js?v=10"></script>
+<!-- api.js MUST come before main.js so search + slider use the database -->
+<script src="js/api.js?v=11"></script>
+<script src="js/main.js?v=11"></script>
+<script>
+// ── Hero slider: tries database first, falls back to local array ──
+window.addEventListener("load", async () => {
+  const hero = document.getElementById("heroSlider");
+  if (!hero) return;
+
+  const grads = [
+    "linear-gradient(135deg,#1b5e20,#2e7d32)",
+    "linear-gradient(135deg,#b71c1c,#c62828)",
+    "linear-gradient(135deg,#0d47a1,#1565c0)",
+    "linear-gradient(135deg,#880e4f,#ad1457)",
+    "linear-gradient(135deg,#4a148c,#6a1b9a)",
+    "linear-gradient(135deg,#004d40,#00695c)",
+    "linear-gradient(135deg,#e65100,#ef6c00)",
+    "linear-gradient(135deg,#37474f,#546e7a)"
+  ];
+
+  // Try database first; if it fails or returns nothing, use local array
+  let slideData = [];
+  try {
+    const dbResults = await apiFetchPopular(8);
+    if (dbResults && dbResults.length) {
+      // Normalise DB fields to match local array field names
+      slideData = dbResults.map(r => ({
+        id:       r.id,
+        name:     r.name,
+        emoji:    r.emoji || "🍽️",
+        category: r.category,
+        time:     r.cook_time || r.time || "",
+        views:    r.views || 0,
+        img:      r.image_url || r.img || ""
+      }));
+    }
+  } catch(e) { /* DB not ready – fall through */ }
+
+  // Fallback: pick 8 most-viewed from the local recipes array
+  if (!slideData.length && typeof recipes !== "undefined") {
+    slideData = [...recipes]
+      .sort((a, b) => b.views - a.views)
+      .slice(0, 8);
+  }
+
+  if (!slideData.length) return; // nothing at all – give up
+
+  // Rebuild slider
+  hero.innerHTML = "";
+
+  slideData.forEach((r, i) => {
+    const div = document.createElement("div");
+    div.className = "slide" + (i === 0 ? " active" : "");
+    div.style.background = grads[i % grads.length];
+
+    const imgSrc = r.img || r.image_url || "";
+    if (imgSrc) {
+      const bg = new Image();
+      bg.onload = () => {
+        div.style.backgroundImage =
+          "linear-gradient(rgba(0,0,0,0.45),rgba(0,0,0,0.55)),url('" + imgSrc + "')";
+        div.style.backgroundSize = "cover";
+        div.style.backgroundPosition = "center";
+      };
+      bg.src = imgSrc;
+    }
+
+    div.innerHTML = `<div class="slide-content">
+      <div style="font-size:64px;margin-bottom:8px;line-height:1;">${r.emoji}</div>
+      <h1>${r.name}</h1>
+      <p>${r.category} &nbsp;·&nbsp; ⏱ ${r.time} &nbsp;·&nbsp; 👁 ${r.views} views</p>
+      <a href="recipe.html?id=${r.id}" class="btn btn-primary" style="margin-right:12px;">View Recipe</a>
+      <a href="categories.html" class="btn btn-outline">Browse All</a>
+    </div>`;
+    hero.appendChild(div);
+  });
+
+  // Rebuild dots
+  currentSlide = 0;
+  const dotsWrap = document.getElementById("sliderDots");
+  if (dotsWrap) {
+    dotsWrap.innerHTML = "";
+    slideData.forEach((_, i) => {
+      const dot = document.createElement("button");
+      dot.className = "dot" + (i === 0 ? " active" : "");
+      dot.onclick = () => goToSlide(i);
+      dotsWrap.appendChild(dot);
+    });
+  }
+});
+</script>
 </body>
 </html>

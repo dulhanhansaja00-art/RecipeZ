@@ -283,71 +283,42 @@ function closeSearch() {
   const ov = document.getElementById("searchOverlay");
   if (ov) ov.classList.remove("open");
 }
-function doSearch() {
+// ── PROJECT: Search (queries database via API) ──
+async function doSearch() {
   const input = document.getElementById("searchInput");
   const list  = document.getElementById("searchResultsList");
   if (!input || !list) return;
-  const q = input.value.toLowerCase().trim();
-  if (q.length < 2) { list.innerHTML = "<li style='color:#aaa;padding:12px'>Type to search...</li>"; return; }
-  // Lab 06: Array filter + string includes
-  const results = recipes.filter(r => r.name.toLowerCase().includes(q) || r.category.toLowerCase().includes(q)).slice(0, 8);
-  if (results.length === 0) { list.innerHTML = `<li style='padding:12px;color:#aaa;'>No results for "${q}"</li>`; return; }
-  list.innerHTML = "";
-  for (let i = 0; i < results.length; i++) {
-    const r  = results[i];
-    const li = document.createElement("li");
-    li.innerHTML = `${r.emoji} <strong>${r.name}</strong> <span style='color:#5a7a5a;font-size:12px;'>${r.category}</span>`;
-    li.addEventListener("click", () => { window.location.href = "recipe.html?id=" + r.id; closeSearch(); });
-    list.appendChild(li);
+  const q = input.value.trim();
+  if (q.length < 2) {
+    list.innerHTML = "<li style='color:#aaa;padding:12px'>Type to search...</li>";
+    return;
+  }
+  list.innerHTML = "<li style='color:#aaa;padding:12px'>Searching...</li>";
+  try {
+    const results = await apiSearch(q);
+    if (!results.length) {
+      list.innerHTML = `<li style='padding:12px;color:#aaa;'>No results for "${q}"</li>`;
+      return;
+    }
+    list.innerHTML = "";
+    results.slice(0, 8).forEach(r => {
+      const li = document.createElement("li");
+      li.innerHTML = `${r.emoji} <strong>${r.name}</strong> <span style='color:#5a7a5a;font-size:12px;'>${r.category}</span>`;
+      li.addEventListener("click", () => {
+        window.location.href = "recipe.html?id=" + r.id;
+        closeSearch();
+      });
+      list.appendChild(li);
+    });
+  } catch(e) {
+    list.innerHTML = "<li style='color:#aaa;padding:12px'>Search unavailable.</li>";
   }
 }
 
 // ── PAGE: Recipe Detail ──
+// Disabled — handled by api.js + recipe.html inline script
 function loadRecipeDetail() {
-  const id     = parseInt(new URLSearchParams(window.location.search).get("id"));
-  const recipe = recipes.find(r => r.id === id);
-  if (!recipe) {
-    document.body.innerHTML = "<div style='text-align:center;margin-top:100px;'><h2 style='font-family:Playfair Display,serif;color:#1b5e20;'>Recipe not found 😕</h2><a href='index.html' class='btn btn-primary' style='margin-top:20px;display:inline-block;'>← Back Home</a></div>";
-    return;
-  }
-  document.title = recipe.name + " | RECIPEZ";
-  updateViewCount(id);
-  const nameEl = document.getElementById("recipeTitle");
-  if (nameEl) nameEl.textContent = recipe.emoji + " " + recipe.name;
-  const catEl = document.getElementById("recipeCat");
-  if (catEl) catEl.textContent = recipe.category + " · ⏱ " + recipe.time + " · 👁 " + recipe.views + " views";
-  // Set YouTube iframe src (Lab 03: DOM)
-  const iframe = document.getElementById("recipeIframe");
-  if (iframe) iframe.src = recipe.youtube;
-
-  // Set fallback Watch on YouTube button
-  const ytBtn = document.getElementById("youtubeLink");
-  if (ytBtn) {
-    // Convert embed URL back to watch URL for the button
-    const embedUrl  = recipe.youtube;
-    const videoId   = embedUrl.replace("https://www.youtube.com/embed/", "").split("?")[0];
-    ytBtn.href      = "https://www.youtube.com/watch?v=" + videoId;
-  }
-  // Lab 01: Table — Lab 05: for loop
-  const tbody = document.getElementById("ingredientsBody");
-  if (tbody) {
-    tbody.innerHTML = "";
-    for (let i = 0; i < recipe.ingredients.length; i++) {
-      const tr = document.createElement("tr");
-      tr.innerHTML = `<td>${recipe.ingredients[i][0]}</td><td>${recipe.ingredients[i][1]}</td>`;
-      tbody.appendChild(tr);
-    }
-  }
-  // Lab 01: OL — Lab 05: for loop
-  const stepsList = document.getElementById("stepsList");
-  if (stepsList) {
-    stepsList.innerHTML = "";
-    for (let i = 0; i < recipe.steps.length; i++) {
-      const li = document.createElement("li");
-      li.textContent = recipe.steps[i];
-      stepsList.appendChild(li);
-    }
-  }
+  return;
 }
 
 // ── PAGE: Comments ──
@@ -472,12 +443,11 @@ document.addEventListener("DOMContentLoaded", () => {
   if (page.endsWith("category.html")) {
     loadCategoryPage();
   } else if (page.endsWith("recipe.html") && !page.endsWith("add-recipe.html")) {
-    loadRecipeDetail();
+    // Handled by api.js inline script in recipe.html
   } else if (page.endsWith("popular.html")) {
     renderCards(getPopular(), "popularRecipes", true);
   } else if (!page.endsWith("add-recipe.html") && !page.endsWith("login.html") && !page.endsWith("register.html") && !page.endsWith("categories.html")) {
-    // Home page (index.html, /, or any root)
-    initSlider();
+    // Home page - slider is built from database in index.html inline script
     startAutoPlay();
     renderCards(getLatest(), "latestRecipes", false);
   }
@@ -489,6 +459,21 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const links = document.querySelectorAll(".nav-links a");
   links.forEach(link => { if (link.href === window.location.href) link.classList.add("active"); });
+
+  // ── AUTH NAVBAR: update login button based on session ──
+  if (typeof apiMe === 'function') {
+    apiMe().then(me => {
+      const navList = document.querySelector('.nav-links');
+      if (!navList) return;
+      const loginLi = document.getElementById('navLoginBtn')?.closest('li');
+      if (!loginLi) return;
+
+      if (me.loggedIn) {
+        // Replace login button with username + logout
+        loginLi.innerHTML = '<a href="#" onclick="apiLogout();return false;" style="color:#fff;">👤 ' + me.user.username + ' | Logout</a>';
+      }
+    });
+  }
 
   console.log("RECIPEZ ✅ — " + recipes.length + " recipes loaded");
 });

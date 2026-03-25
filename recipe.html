@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Recipe | RECIPEZ</title>
-  <link rel="stylesheet" href="css/styles.css?v=10">
+  <link rel="stylesheet" href="css/styles.css?v=11">
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 </head>
 <body>
@@ -17,27 +17,26 @@
     <li><a href="popular.html">Popular</a></li>
     <li><a href="#" onclick="openSearch(); return false;">🔍 Search</a></li>
     <li><a href="add-recipe.html" class="btn-add">✍️ Add Recipe</a></li>
-    <li><a href="login.html" class="btn-login">👤 Login</a></li>
+    <li><a href="login.html" class="btn-login" id="navLoginBtn">👤 Login</a></li>
+    <li><a href="contact.html">📬 Contact</a></li>
+<li><a href="login.html" class="btn-login" id="navLoginBtn">👤 Login</a></li>
   </ul>
   <button class="hamburger" onclick="toggleMenu()">☰</button>
 </nav>
 
 <!-- Recipe Title Banner -->
 <section style="background:linear-gradient(135deg,#1a2e1a,#2e7d32); padding:40px 48px; text-align:center;">
-  <!-- Lab 03: innerHTML set by JS -->
-  <h1 id="recipeTitle" style="font-family:'Playfair Display',serif; font-size:44px; color:#fff; margin-bottom:10px;"></h1>
+  <h1 id="recipeTitle" style="font-family:'Playfair Display',serif; font-size:44px; color:#fff; margin-bottom:10px;">Loading...</h1>
   <p id="recipeCat" style="color:#d4efd4; font-size:16px;"></p>
   <a href="javascript:history.back()" class="btn btn-outline" style="margin-top:16px;">← Go Back</a>
 </section>
 
-<!-- TWO COLUMN LAYOUT (Framework: Left = video + comments, Right = recipe) -->
+<!-- TWO COLUMN LAYOUT -->
 <div class="recipe-detail">
 
   <!-- LEFT: YouTube Video + Comments -->
   <div class="recipe-left">
 
-    <!-- YouTube Embed (Framework requirement) -->
-    <!-- Lab 03: iframe src set by JS loadRecipeDetail() -->
     <div class="recipe-video">
       <iframe id="recipeIframe" src=""
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
@@ -46,7 +45,7 @@
               style="width:100%;height:100%;border:none;border-radius:14px;">
       </iframe>
     </div>
-    <!-- Fallback: direct YouTube link if iframe is blocked -->
+
     <div style="text-align:center; margin-top:10px;">
       <a id="youtubeLink" href="#" target="_blank"
          class="btn btn-primary"
@@ -55,18 +54,11 @@
       </a>
     </div>
 
-    <!-- COMMENTS (Lab 06: arrays, Lab 05: function, Lab 03: DOM) -->
+    <!-- COMMENTS -->
     <div class="comments-section">
       <h3 style="font-family:'Playfair Display',serif; color:#1b5e20; margin-bottom:16px; font-size:22px;">💬 Community Comments</h3>
 
-      <!-- Lab 01: HTML Form elements -->
-      <div style="display:flex; gap:10px; margin-bottom:10px;">
-        <input type="text" id="commenterName" class="comment-input"
-               style="min-height:unset; height:46px; flex:1;"
-               placeholder="Your name (optional)">
-      </div>
       <textarea class="comment-input" id="commentBox" placeholder="Share your experience with this recipe..."></textarea>
-      <!-- Lab 03: onclick event -->
       <button class="btn btn-primary" onclick="submitComment()" style="width:100%;">Post Comment</button>
 
       <div id="commentsList" style="margin-top:20px;"></div>
@@ -76,9 +68,7 @@
   <!-- RIGHT: Recipe Details -->
   <div class="recipe-right">
 
-    <!-- INGREDIENTS TABLE (Lab 01: HTML Table) -->
     <h3 style="font-family:'Playfair Display',serif; color:#1b5e20; font-size:24px; margin-bottom:16px;">🛒 Ingredients</h3>
-    <!-- Lab 01: <table> with <th>, <tr>, <td> -->
     <table class="ingredients-table" border="1">
       <thead>
         <tr>
@@ -86,19 +76,12 @@
           <th>Amount</th>
         </tr>
       </thead>
-      <tbody id="ingredientsBody">
-        <!-- Lab 03: DOM - filled by JS for loop (Lab 05) -->
-      </tbody>
+      <tbody id="ingredientsBody"></tbody>
     </table>
 
-    <!-- STEPS (Lab 01: Ordered List <ol><li>) -->
     <h3 style="font-family:'Playfair Display',serif; color:#1b5e20; font-size:24px; margin:28px 0 16px;">📋 Steps</h3>
-    <!-- Lab 01: Ordered list -->
-    <ol class="steps-list" id="stepsList">
-      <!-- Lab 03: DOM - filled by JS -->
-    </ol>
+    <ol class="steps-list" id="stepsList"></ol>
 
-    <!-- UNORDERED LIST of tips (Lab 01: <ul><li>) -->
     <h3 style="font-family:'Playfair Display',serif; color:#1b5e20; font-size:20px; margin:28px 0 12px;">💡 Tips</h3>
     <ul style="padding-left:20px; color:#5a7a5a; font-size:14px; line-height:2;">
       <li>Read all steps before you start cooking</li>
@@ -128,6 +111,128 @@
   </div>
 </div>
 
-<script src="js/main.js?v=10"></script>
+<!-- api.js MUST come before main.js -->
+<script src="js/api.js?v=11"></script>
+<script src="js/main.js?v=11"></script>
+<script>
+// ── Load recipe from PHP API ──────────────────────────────────
+(async () => {
+  const params   = new URLSearchParams(window.location.search);
+  const recipeId = parseInt(params.get('id'));
+
+  if (!recipeId) {
+    document.getElementById('recipeTitle').textContent = 'Recipe not found 😟';
+    return;
+  }
+
+  // Increment view count
+  apiIncrementView(recipeId);
+
+  // Fetch recipe data
+  const recipe = await apiFetchRecipe(recipeId);
+
+  if (recipe.error) {
+    document.getElementById('recipeTitle').textContent = 'Recipe not found 😟';
+    return;
+  }
+
+  // Title & category
+  document.title = recipe.name + ' | RECIPEZ';
+  document.getElementById('recipeTitle').textContent = (recipe.emoji || '🍽️') + ' ' + recipe.name;
+  document.getElementById('recipeCat').textContent   = '📂 ' + recipe.category + (recipe.cook_time ? '  •  ⏱ ' + recipe.cook_time : '');
+
+  // YouTube video
+  if (recipe.youtube_url) {
+    document.getElementById('recipeIframe').src = recipe.youtube_url;
+    document.getElementById('youtubeLink').href = recipe.youtube_url.replace('/embed/', '/watch?v=');
+  }
+
+  // Ingredients table
+  const tbody       = document.getElementById('ingredientsBody');
+  const ingredients = Array.isArray(recipe.ingredients) ? recipe.ingredients : [];
+  if (ingredients.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="2" style="color:#aaa;text-align:center;">No ingredients listed.</td></tr>';
+  } else {
+    ingredients.forEach(ing => {
+      const row    = document.createElement('tr');
+      const name   = Array.isArray(ing) ? ing[0] : (ing.name   || '');
+      const amount = Array.isArray(ing) ? ing[1] : (ing.amount || '');
+      row.innerHTML = `<td>${name}</td><td>${amount}</td>`;
+      tbody.appendChild(row);
+    });
+  }
+
+  // Steps list
+  const stepsList = document.getElementById('stepsList');
+  const steps     = Array.isArray(recipe.steps) ? recipe.steps : [];
+  if (steps.length === 0) {
+    stepsList.innerHTML = '<li style="color:#aaa;">No steps listed.</li>';
+  } else {
+    steps.forEach(step => {
+      const li = document.createElement('li');
+      li.textContent = step;
+      stepsList.appendChild(li);
+    });
+  }
+
+  // Load comments
+  await loadComments(recipeId);
+
+  // Submit comment
+  window.submitComment = async function () {
+    const body = document.getElementById('commentBox').value.trim();
+    if (!body) { alert('Please write a comment first.'); return; }
+    const result = await apiPostComment(recipeId, body);
+    if (result.success) {
+      document.getElementById('commentBox').value = '';
+      await loadComments(recipeId);
+    } else {
+      alert(result.error || 'Could not post comment.');
+    }
+  };
+
+  // Update nav login button if logged in
+  const me = await apiMe();
+  if (me.loggedIn) {
+    const btn = document.getElementById('navLoginBtn');
+    if (btn) {
+      btn.textContent = '👤 ' + me.user.username;
+      btn.href        = '#';
+      btn.onclick     = () => { apiLogout(); return false; };
+    }
+  }
+})();
+
+async function loadComments(recipeId) {
+  const comments = await apiFetchComments(recipeId);
+  const list     = document.getElementById('commentsList');
+  if (!comments.length) {
+    list.innerHTML = '<p style="color:#aaa; font-size:14px;">No comments yet. Be the first!</p>';
+    return;
+  }
+  list.innerHTML = comments.map(c => `
+    <div style="background:#f1f8e9; border-radius:10px; padding:14px 16px; margin-bottom:12px;">
+      <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
+        <strong style="color:#2e7d32;">👤 ${c.author}</strong>
+        <span style="font-size:12px; color:#aaa;">${c.date}</span>
+      </div>
+      <p style="color:#333; margin:0; font-size:14px;">${c.body}</p>
+    </div>
+  `).join('');
+}
+</script>
+<script>
+(async () => {
+  const me = await apiMe();
+  if (me.loggedIn) {
+    const btn = document.getElementById('navLoginBtn');
+    if (btn) {
+      btn.textContent = '👤 ' + me.user.username;
+      btn.href = '#';
+      btn.onclick = () => { apiLogout(); return false; };
+    }
+  }
+})();
+</script>
 </body>
 </html>

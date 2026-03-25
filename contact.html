@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<!-- Lab 01: HTML file structure -->
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RECIPEZ – Contact</title>
+  <link rel="stylesheet" href="css/styles.css?v=11">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <!-- Lab 02: Embedded CSS (Step 2) -->
+  <style>
+    /* ── Contact page specific styles ── */
+    .contact-hero {
+      background: var(--dark);
+      padding: 64px 48px 48px;
+      text-align: center;
+      border-bottom: 3px solid var(--primary-light);
+      position: relative;
+      overflow: hidden;
+    }
+    .contact-hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse at 30% 60%, rgba(46,125,50,0.18) 0%, transparent 60%),
+                  radial-gradient(ellipse at 75% 20%, rgba(249,168,37,0.10) 0%, transparent 50%);
+      pointer-events: none;
+    }
+    .contact-hero h1 {
+      font-family: var(--font-head);
+      font-size: 48px;
+      color: #fff;
+      margin-bottom: 12px;
+      position: relative;
+    }
+    .contact-hero h1 span { color: var(--accent); }
+    .contact-hero p {
+      color: #a8d5a8;
+      font-size: 18px;
+      max-width: 520px;
+      margin: 0 auto;
+      position: relative;
+    }
+
+    /* ── Team grid ── */
+    .team-section {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 64px 24px 40px;
+    }
+    .team-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 36px;
+      margin-top: 40px;
+    }
+
+    /* ── Profile card ── */
+    .profile-card {
+      background: var(--card-bg);
+      border-radius: var(--radius);
+      border: 2px solid var(--border);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      transition: transform 0.25s, box-shadow 0.25s;
+    }
+    .profile-card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 16px 48px rgba(46,125,50,0.16);
+    }
+
+    /* Card header strip */
+    .card-header {
+      background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+      padding: 32px 28px 28px;
+      text-align: center;
+      position: relative;
+    }
+    .card-header::after {
+      content: '';
+      position: absolute;
+      bottom: -1px; left: 0; right: 0;
+      height: 24px;
+      background: var(--card-bg);
+      clip-path: ellipse(55% 100% at 50% 100%);
+    }
+
+    /* Avatar — full name badge */
+    .avatar {
+      display: inline-block;
+      background: var(--accent);
+      color: var(--dark);
+      font-family: var(--font-head);
+      font-size: 17px;
+      font-weight: 900;
+      line-height: 1.2;
+      padding: 12px 24px;
+      border-radius: 40px;
+      margin: 0 auto 14px;
+      border: 3px solid rgba(255,255,255,0.30);
+      box-shadow: 0 6px 20px rgba(0,0,0,0.22);
+      letter-spacing: 0.3px;
+      text-align: center;
+      max-width: 100%;
+    }
+    .card-header h2 {
+      font-family: var(--font-head);
+      font-size: 22px;
+      color: #fff;
+      margin-bottom: 4px;
+    }
+    .student-id {
+      display: inline-block;
+      background: rgba(255,255,255,0.15);
+      color: #d4efd4;
+      font-size: 13px;
+      font-weight: 600;
+      padding: 4px 14px;
+      border-radius: 20px;
+      letter-spacing: 0.5px;
+      margin-top: 4px;
+    }
+
+    /* Card body */
+    .card-body {
+      padding: 28px 28px 32px;
+    }
+
+    /* Contact links */
+    .contact-links {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+    .contact-links li a {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      text-decoration: none;
+      color: var(--text);
+      font-size: 15px;
+      font-weight: 500;
+      padding: 12px 16px;
+      border-radius: 10px;
+      border: 1.5px solid var(--border);
+      background: var(--bg);
+      transition: background 0.2s, border-color 0.2s, color 0.2s, transform 0.15s;
+      word-break: break-all;
+    }
+    .contact-links li a:hover {
+      background: var(--bg2);
+      border-color: var(--primary-light);
+      color: var(--primary-dark);
+      transform: translateX(4px);
+    }
+
+    /* Icon badges */
+    .link-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+    .icon-email    { background: #fce4ec; }
+    .icon-linkedin { background: #e3f2fd; }
+    .icon-github   { background: #f3e5f5; }
+
+    .link-text {
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .link-label {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--muted);
+      font-weight: 600;
+      margin-bottom: 1px;
+    }
+    .link-value {
+      font-size: 14px;
+      font-weight: 500;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* ── Contact Form Section ── */
+    .contact-form-section {
+      max-width: 680px;
+      margin: 0 auto;
+      padding: 0 24px 64px;
+    }
+    .contact-form-section .section-title {
+      text-align: center;
+      color: #1b5e20;
+      font-size: 32px;
+    }
+    /* Lab 02: Embedded CSS for form card */
+    .contact-form-card {
+      background: var(--card-bg);
+      border-radius: var(--radius);
+      border: 2px solid var(--border);
+      box-shadow: var(--shadow);
+      padding: 40px 36px;
+      margin-top: 32px;
+    }
+    /* Lab 01: form, label, input, textarea elements */
+    .cf-group {
+      margin-bottom: 20px;
+    }
+    .cf-group label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      margin-bottom: 7px;
+    }
+    .cf-group input,
+    .cf-group textarea {
+      width: 100%;
+      box-sizing: border-box;
+      padding: 12px 16px;
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-body, 'DM Sans', sans-serif);
+      font-size: 15px;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      outline: none;
+    }
+    .cf-group input:focus,
+    .cf-group textarea:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(46,125,50,0.12);
+    }
+    .cf-group textarea {
+      resize: vertical;
+      min-height: 130px;
+    }
+    /* Lab 03: JS-driven feedback messages */
+    #cfMsg {
+      display: none;
+      padding: 14px 18px;
+      border-radius: 10px;
+      font-size: 15px;
+      font-weight: 500;
+      margin-bottom: 18px;
+      text-align: center;
+    }
+    #cfMsg.success { background: #e8f5e9; color: #1b5e20; border: 1.5px solid #a5d6a7; }
+    #cfMsg.error   { background: #fce4ec; color: #b71c1c; border: 1.5px solid #ef9a9a; }
+
+    .cf-submit {
+      width: 100%;
+      padding: 14px;
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.15s;
+      letter-spacing: 0.3px;
+    }
+    .cf-submit:hover  { background: var(--primary-dark); transform: translateY(-2px); }
+    .cf-submit:active { transform: translateY(0); }
+    .cf-submit:disabled { opacity: 0.65; cursor: not-allowed; transform: none; }
+
+    /* University banner */
+    .uni-banner {
+      background: var(--dark);
+      color: #a8d5a8;
+      text-align: center;
+      padding: 28px 24px;
+      font-size: 14px;
+      line-height: 1.9;
+      border-top: 3px solid var(--primary);
+    }
+    .uni-banner strong { color: #fff; }
+
+    /* Responsive */
+    @media (max-width: 700px) {
+      .team-grid { grid-template-columns: 1fr; gap: 28px; }
+      .contact-hero { padding: 48px 20px 36px; }
+      .contact-hero h1 { font-size: 34px; }
+      .contact-hero p { font-size: 15px; }
+      .team-section { padding: 40px 16px 24px; }
+      .contact-form-card { padding: 28px 20px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Lab 01: Navigation -->
+<nav class="navbar">
+  <a class="nav-logo" href="index.html">RECIPE<span>Z</span></a>
+  <ul class="nav-links" id="navLinks">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="categories.html">Categories</a></li>
+    <li><a href="popular.html">Popular</a></li>
+    <li><a href="#" onclick="openSearch(); return false;">🔍 Search</a></li>
+    <li><a href="add-recipe.html" class="btn-add">✍️ Add Recipe</a></li>
+    <li><a href="contact.html" class="active">📬 Contact</a></li>
+    <li><a href="login.html" class="btn-login">👤 Login</a></li>
+  </ul>
+  <button class="hamburger" onclick="toggleMenu()">☰</button>
+</nav>
+
+<!-- Page Hero -->
+<div class="contact-hero">
+  <h1>Meet the <span>Team</span></h1>
+  <p>The developers behind RECIPEZ — ICT 2204 / COM 2303, Rajarata University of Sri Lanka</p>
+</div>
+
+<!-- Team Cards -->
+<section class="team-section">
+  <!-- Lab 02: Inline CSS on section title -->
+  <h2 class="section-title" style="text-align:center; color:#1b5e20; font-size:32px;">Get in Touch</h2>
+  <div class="divider"></div>
+
+  <!-- Lab 01: Unordered list structure for team grid -->
+  <div class="team-grid">
+
+    <!-- ── Developer 1: Mithila ── -->
+    <div class="profile-card">
+      <div class="card-header">
+        <div class="avatar">Mithila Umayantha</div>
+        <!-- Lab 01: Headings -->
+        <h2>Mithila Umayantha</h2>
+        <span class="student-id">ICT/2023/047</span>
+      </div>
+      <div class="card-body">
+        <!-- Lab 01: Unordered list -->
+        <ul class="contact-links">
+          <!-- Lab 01: Hyperlinks <a href> -->
+          <li>
+            <a href="mailto:mithilaumayantha115@gmail.com">
+              <span class="link-icon icon-email">✉️</span>
+              <span class="link-text">
+                <span class="link-label">Email</span>
+                <span class="link-value">mithilaumayantha115@gmail.com</span>
+              </span>
+            </a>
+          </li>
+          <li>
+            <a href="https://www.linkedin.com/in/mithila-umayantha-8a34b026b/" target="_blank" rel="noopener">
+              <span class="link-icon icon-linkedin">💼</span>
+              <span class="link-text">
+                <span class="link-label">LinkedIn</span>
+                <span class="link-value">Mithila Umayantha</span>
+              </span>
+            </a>
+          </li>
+          <li>
+            <a href="https://github.com/MBeBoB" target="_blank" rel="noopener">
+              <span class="link-icon icon-github">🐙</span>
+              <span class="link-text">
+                <span class="link-label">GitHub</span>
+                <span class="link-value">github.com/MBeBoB</span>
+              </span>
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- ── Developer 2: Dulhan ── -->
+    <div class="profile-card">
+      <div class="card-header">
+        <div class="avatar">Dulhan Hansaja</div>
+        <h2>Dulhan Hansaja</h2>
+        <span class="student-id">ICT/2023/008</span>
+      </div>
+      <div class="card-body">
+        <ul class="contact-links">
+          <li>
+            <a href="mailto:dulhanhansaja@gmail.com">
+              <span class="link-icon icon-email">✉️</span>
+              <span class="link-text">
+                <span class="link-label">Email</span>
+                <span class="link-value">dulhanhansaja@gmail.com</span>
+              </span>
+            </a>
+          </li>
+          <li>
+            <a href="https://www.linkedin.com/in/dulhan-hansaja-80220933a" target="_blank" rel="noopener">
+              <span class="link-icon icon-linkedin">💼</span>
+              <span class="link-text">
+                <span class="link-label">LinkedIn</span>
+                <span class="link-value">Dulhan Hansaja</span>
+              </span>
+            </a>
+          </li>
+          <li>
+            <a href="https://github.com/DulhanHansaja" target="_blank" rel="noopener">
+              <span class="link-icon icon-github">🐙</span>
+              <span class="link-text">
+                <span class="link-label">GitHub</span>
+                <span class="link-value">github.com/DulhanHansaja</span>
+              </span>
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+  </div><!-- /team-grid -->
+</section>
+
+<!-- ── Contact Form (Phase 3: DB-stored submissions) ── -->
+<section class="contact-form-section">
+  <!-- Lab 01: Heading -->
+  <h2 class="section-title">Send Us a Message</h2>
+  <div class="divider"></div>
+
+  <div class="contact-form-card">
+    <!-- Lab 03: JS-driven feedback -->
+    <div id="cfMsg"></div>
+
+    <!-- Lab 01: Form elements — input, textarea, label -->
+    <!-- Lab 04: JS validation with if/else before API submit -->
+    <div class="cf-group">
+      <label for="cfName">Your Name</label>
+      <!-- Lab 01: input tag -->
+      <input type="text" id="cfName" placeholder="e.g. Kasun Perera" maxlength="100">
+    </div>
+
+    <div class="cf-group">
+      <label for="cfEmail">Email Address</label>
+      <input type="email" id="cfEmail" placeholder="you@example.com" maxlength="120">
+    </div>
+
+    <div class="cf-group">
+      <label for="cfMessage">Message</label>
+      <!-- Lab 01: textarea tag -->
+      <textarea id="cfMessage" placeholder="Write your query or feedback here..." maxlength="2000"></textarea>
+    </div>
+
+    <!-- Lab 03: onclick event handling -->
+    <button class="cf-submit" id="cfBtn" onclick="submitContactForm()">📨 Send Message</button>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer>
+  <p><strong style="color:#fff;">RECIPE<span style="color:#f9a825;">Z</span></strong> — Community Recipe Sharing Platform</p>
+  <p style="margin-top:8px;">
+    <a href="categories.html">Categories</a> &nbsp;|&nbsp;
+    <a href="popular.html">Popular</a> &nbsp;|&nbsp;
+    <a href="add-recipe.html">Add Recipe</a> &nbsp;|&nbsp;
+    <a href="contact.html">Contact</a> &nbsp;|&nbsp;
+    <a href="login.html">Login</a>
+  </p>
+  <p class="footer-credits">
+    ICT 2204 – Web Technologies &nbsp;|&nbsp; Rajarata University of Sri Lanka<br>
+    ICT/2023/047 &amp; ICT/2023/008
+  </p>
+</footer>
+
+<!-- BACK TO TOP -->
+<button id="backToTop" title="Back to Top">↑</button>
+
+<!-- SEARCH OVERLAY -->
+<div class="search-overlay" id="searchOverlay" onclick="if(event.target===this)closeSearch()">
+  <div class="search-box">
+    <h3 style="margin-bottom:16px; color:#1b5e20; font-family:'Playfair Display',serif;">🔍 Search Recipes</h3>
+    <input type="text" id="searchInput" placeholder="Search by name or category..." oninput="doSearch()">
+    <ul class="search-results-list" id="searchResultsList">
+      <li style="color:#aaa;padding:12px">Type to search recipes...</li>
+    </ul>
+    <button class="btn btn-primary" onclick="closeSearch()" style="margin-top:12px;width:100%;">Close</button>
+  </div>
+</div>
+
+<script src="js/api.js?v=11"></script>
+<script src="js/main.js?v=11"></script>
+<script>
+// ============================================================
+//  Contact Form — Lab 03: DOM, Lab 04: if/else validation,
+//  Lab 07: fetch to PHP API, data stored in MySQL messages table
+// ============================================================
+
+// Lab 05: function definition
+async function submitContactForm() {
+  // Lab 03: DOM access
+  const nameVal = document.getElementById('cfName').value.trim();
+  const emailVal = document.getElementById('cfEmail').value.trim();
+  const msgVal  = document.getElementById('cfMessage').value.trim();
+  const btn     = document.getElementById('cfBtn');
+  const feedback = document.getElementById('cfMsg');
+
+  // Lab 04: if/else input validation
+  if (nameVal.length < 2) {
+    showCfMsg('Please enter your name (at least 2 characters).', 'error');
+    return;
+  }
+  // Lab 04: logical operators
+  if (!emailVal || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailVal)) {
+    showCfMsg('Please enter a valid email address.', 'error');
+    return;
+  }
+  if (msgVal.length < 10) {
+    showCfMsg('Message must be at least 10 characters.', 'error');
+    return;
+  }
+
+  // Lab 03: DOM manipulation — disable button during request
+  btn.disabled = true;
+  btn.textContent = 'Sending…';
+
+  try {
+    // Lab 07: fetch to PHP REST API endpoint
+    const res  = await fetch('api/contact.php', {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json' },
+      // Lab 06: JS object literal
+      body: JSON.stringify({ name: nameVal, email: emailVal, message: msgVal }),
+    });
+    const data = await res.json();
+
+    if (data.success) {
+      showCfMsg('✅ ' + data.message, 'success');
+      // Lab 03: DOM reset
+      document.getElementById('cfName').value    = '';
+      document.getElementById('cfEmail').value   = '';
+      document.getElementById('cfMessage').value = '';
+    } else {
+      showCfMsg('❌ ' + (data.error || 'Something went wrong.'), 'error');
+    }
+  } catch (err) {
+    showCfMsg('❌ Could not send message. Please try again.', 'error');
+  }
+
+  btn.disabled    = false;
+  btn.textContent = '📨 Send Message';
+}
+
+// Lab 05: helper function
+function showCfMsg(text, type) {
+  const el = document.getElementById('cfMsg');
+  // Lab 03: innerHTML update
+  el.textContent  = text;
+  el.className    = type;   // 'success' or 'error'
+  el.style.display = 'block';
+  // Lab 05: setTimeout (function + delay)
+  setTimeout(() => { el.style.display = 'none'; }, 6000);
+}
+</script>
+</body>
+</html>

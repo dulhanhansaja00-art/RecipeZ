@@ -1,212 +1,159 @@
 <!DOCTYPE html>
-<!-- Lab 01: HTML structure -->
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Register | RECIPEZ</title>
-  <!-- Lab 02: External CSS -->
   <link rel="stylesheet" href="css/styles.css?v=10">
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
-  <!-- Lab 02: Embedded CSS (Step 2) -->
   <style>
-    /* Lab 02: Embedded CSS block */
-    .strength-bar { height: 6px; border-radius: 3px; background: #e0e0e0; margin-top: 6px; overflow: hidden; }
-    .strength-fill { height: 100%; border-radius: 3px; transition: width 0.3s, background 0.3s; width: 0; }
-    .strength-text { font-size: 12px; margin-top: 4px; font-weight: 600; }
-    .hint-item { font-size: 12px; color: #5a7a5a; margin-top: 2px; }
-    .hint-item.met { color: #2e7d32; }
-    .hint-item.unmet { color: #c62828; }
+    .strength-bar  { height:6px; border-radius:3px; background:#e0e0e0; margin-top:6px; overflow:hidden; }
+    .strength-fill { height:100%; border-radius:3px; transition:width .3s,background .3s; width:0; }
+    .strength-text { font-size:12px; margin-top:4px; font-weight:600; }
+    .hint-item     { font-size:12px; color:#5a7a5a; margin-top:2px; }
+    .hint-item.met   { color:#2e7d32; }
+    .hint-item.unmet { color:#c62828; }
   </style>
 </head>
 <body>
 
-<!-- Full screen layout like login page -->
 <div class="login-page">
   <div class="login-card" style="max-width:460px;">
 
-    <!-- Logo -->
     <div class="logo">RECIPE<span>Z</span></div>
     <p class="tagline">Create your free account to share recipes</p>
 
-    <!-- REGISTER FORM -->
-    <!-- Lab 03: onsubmit event, Lab 04: if-else validation -->
+    <!-- Username -->
     <div class="form-group">
-      <label for="regEmail" style="font-size:14px; font-weight:600; color:#5a7a5a;">Email Address</label>
-      <!-- Lab 01: input type email -->
-      <input type="email" id="regEmail" placeholder="you@example.com"
-             onkeydown="if(event.key==='Enter') validateRegister()">
+      <label for="regUser" style="font-size:14px;font-weight:600;color:#5a7a5a;">Username</label>
+      <input type="text" id="regUser" placeholder="e.g. CookingMaster"
+             onkeydown="if(event.key==='Enter') doRegister()">
     </div>
 
+    <!-- Email -->
     <div class="form-group">
-      <label for="regPass" style="font-size:14px; font-weight:600; color:#5a7a5a;">Password</label>
+      <label for="regEmail" style="font-size:14px;font-weight:600;color:#5a7a5a;">Email Address</label>
+      <input type="email" id="regEmail" placeholder="you@example.com"
+             onkeydown="if(event.key==='Enter') doRegister()">
+    </div>
+
+    <!-- Password -->
+    <div class="form-group">
+      <label for="regPass" style="font-size:14px;font-weight:600;color:#5a7a5a;">Password</label>
       <div class="password-wrap">
-        <!-- Lab 03: oninput event for live checking -->
         <input type="password" id="regPass" placeholder="Create a strong password"
-               oninput="checkStrength()" id="regPass">
+               oninput="checkStrength()">
         <button class="toggle-pwd" onclick="toggleRegPass()" type="button">👁</button>
       </div>
-      <!-- Live password strength bar (JS Feature - Dynamic Content) -->
       <div class="strength-bar"><div class="strength-fill" id="strengthFill"></div></div>
       <p class="strength-text" id="strengthText" style="color:#5a7a5a;"></p>
-      <!-- Password rules hints -->
       <div id="passHints">
         <div class="hint-item unmet" id="hint-len">✗ At least 8 characters</div>
-        <div class="hint-item unmet" id="hint-upper">✗ One uppercase letter (A-Z)</div>
-        <div class="hint-item unmet" id="hint-lower">✗ One lowercase letter (a-z)</div>
+        <div class="hint-item unmet" id="hint-upper">✗ One uppercase letter</div>
+        <div class="hint-item unmet" id="hint-lower">✗ One lowercase letter</div>
         <div class="hint-item unmet" id="hint-num">✗ One number (0-9)</div>
         <div class="hint-item unmet" id="hint-spec">✗ One special character (!@#$)</div>
       </div>
     </div>
 
+    <!-- Confirm Password -->
     <div class="form-group">
-      <label for="regConfirm" style="font-size:14px; font-weight:600; color:#5a7a5a;">Confirm Password</label>
+      <label for="regConfirm" style="font-size:14px;font-weight:600;color:#5a7a5a;">Confirm Password</label>
       <input type="password" id="regConfirm" placeholder="Re-enter your password"
-             onkeydown="if(event.key==='Enter') validateRegister()">
-      <!-- Lab 02: Inline CSS on error message -->
-      <p id="matchMsg" style="font-size:12px; margin-top:4px; display:none;"></p>
+             onkeydown="if(event.key==='Enter') doRegister()">
+      <p id="matchMsg" style="font-size:12px;margin-top:4px;display:none;"></p>
     </div>
 
-    <!-- Error message -->
-    <p id="regError" style="color:#c62828; font-size:13px; background:#fce4ec; border:1px solid #ef9a9a; border-radius:8px; padding:10px; margin-bottom:14px; display:none;"></p>
+    <p id="regError" style="color:#c62828;font-size:13px;background:#fce4ec;border:1px solid #ef9a9a;border-radius:8px;padding:10px;margin-bottom:14px;display:none;"></p>
 
-    <!-- Submit button -->
-    <!-- Lab 03: onclick event -->
-    <button class="btn btn-primary" onclick="validateRegister()" style="width:100%; padding:14px; font-size:16px; margin-bottom:12px;">
+    <button class="btn btn-primary" id="regBtn" onclick="doRegister()" style="width:100%;padding:14px;font-size:16px;margin-bottom:12px;">
       Create Account
     </button>
 
-    <div style="text-align:center; margin-top:12px;">
-      <p style="color:#5a7a5a; font-size:14px;">
+    <div style="text-align:center;margin-top:12px;">
+      <p style="color:#5a7a5a;font-size:14px;">
         Already have an account?
-        <a href="login.html" style="color:#2e7d32; font-weight:600; text-decoration:none;">Sign In</a>
+        <a href="login.html" style="color:#2e7d32;font-weight:600;text-decoration:none;">Sign In</a>
       </p>
     </div>
-
   </div>
 </div>
 
+<script src="js/api.js"></script>
 <script src="js/main.js?v=10"></script>
 <script>
-/* ============================================================
-   Register Page JavaScript
-   Lab 04: if-else-if ladder for validation
-   Lab 05: for loop through password characters
-   Lab 03: DOM manipulation for live hints
-   ============================================================ */
-
-// Lab 05: Function - check password strength live
+// Password strength checker (kept from original)
 function checkStrength() {
-  var pass = document.getElementById("regPass").value;
-  var fill = document.getElementById("strengthFill");
-  var text = document.getElementById("strengthText");
+  const pass  = document.getElementById('regPass').value;
+  const rules = {
+    len:   pass.length >= 8,
+    upper: /[A-Z]/.test(pass),
+    lower: /[a-z]/.test(pass),
+    num:   /[0-9]/.test(pass),
+    spec:  /[!@#$%^&*(),.?":{}|<>]/.test(pass),
+  };
+  let score = Object.values(rules).filter(Boolean).length;
 
-  // Check each rule (Lab 04: if statements)
-  var hasLen   = pass.length >= 8;
-  var hasUpper = /[A-Z]/.test(pass);
-  var hasLower = /[a-z]/.test(pass);
-  var hasNum   = /[0-9]/.test(pass);
-  var hasSpec  = /[!@#$%^&*()_+\-=\[\]{}|;:,.<>?]/.test(pass);
+  Object.entries(rules).forEach(([key, ok]) => {
+    const el = document.getElementById('hint-' + key);
+    if (!el) return;
+    el.className = 'hint-item ' + (ok ? 'met' : 'unmet');
+    el.textContent = (ok ? '✓ ' : '✗ ') + el.textContent.slice(2);
+  });
 
-  // Update hints (Lab 03: DOM manipulation)
-  updateHint("hint-len",   hasLen,   "✓ At least 8 characters", "✗ At least 8 characters");
-  updateHint("hint-upper", hasUpper, "✓ One uppercase letter",  "✗ One uppercase letter (A-Z)");
-  updateHint("hint-lower", hasLower, "✓ One lowercase letter",  "✗ One lowercase letter (a-z)");
-  updateHint("hint-num",   hasNum,   "✓ One number",            "✗ One number (0-9)");
-  updateHint("hint-spec",  hasSpec,  "✓ One special character", "✗ One special character (!@#$)");
-
-  // Count passed rules
-  var score = [hasLen, hasUpper, hasLower, hasNum, hasSpec].filter(Boolean).length;
-
-  // if-else-if ladder (Lab 04)
-  if (score === 0) {
-    fill.style.width = "0%"; fill.style.background = "#e0e0e0"; text.textContent = "";
-  } else if (score <= 2) {
-    fill.style.width = "30%"; fill.style.background = "#ef5350"; text.style.color = "#c62828"; text.textContent = "Weak";
-  } else if (score === 3) {
-    fill.style.width = "55%"; fill.style.background = "#ffa726"; text.style.color = "#e65100"; text.textContent = "Fair";
-  } else if (score === 4) {
-    fill.style.width = "75%"; fill.style.background = "#66bb6a"; text.style.color = "#2e7d32"; text.textContent = "Good";
-  } else {
-    fill.style.width = "100%"; fill.style.background = "#2e7d32"; text.style.color = "#1b5e20"; text.textContent = "Strong ✓";
-  }
+  const fill = document.getElementById('strengthFill');
+  const text = document.getElementById('strengthText');
+  const colors = ['#e53935','#e53935','#fb8c00','#fdd835','#43a047'];
+  const labels = ['','Weak','Fair','Good','Strong'];
+  fill.style.width      = (score * 20) + '%';
+  fill.style.background = colors[score];
+  text.textContent      = labels[score] || '';
+  text.style.color      = colors[score];
 }
 
-// Lab 05: Function - update a single hint item
-function updateHint(id, met, metText, unmetText) {
-  var el = document.getElementById(id);
-  if (!el) return;
-  el.textContent = met ? metText : unmetText;
-  el.className   = met ? "hint-item met" : "hint-item unmet";
-}
-
-// Lab 05: Function - validate full form on submit
-function validateRegister() {
-  var email   = document.getElementById("regEmail").value.trim();
-  var pass    = document.getElementById("regPass").value;
-  var confirm = document.getElementById("regConfirm").value;
-  var errEl   = document.getElementById("regError");
-  var matchEl = document.getElementById("matchMsg");
-
-  function showError(msg) {   // Lab 05: nested function
-    errEl.textContent = msg;
-    errEl.style.display = "block";
-  }
-
-  errEl.style.display = "none";
-  matchEl.style.display = "none";
-
-  // Validate each field - if-else-if ladder (Lab 04)
-  if (email === "") {
-    showError("Please enter your email address."); return;
-  }
-  if (pass === "") {
-    showError("Please enter a password."); return;
-  }
-  if (pass.length < 8) {
-    showError("Password must be at least 8 characters long."); return;
-  }
-  if (!/[A-Z]/.test(pass)) {
-    showError("Password must contain at least one uppercase letter (A-Z)."); return;
-  }
-  if (!/[a-z]/.test(pass)) {
-    showError("Password must contain at least one lowercase letter (a-z)."); return;
-  }
-  if (!/[0-9]/.test(pass)) {
-    showError("Password must contain at least one number (0-9)."); return;
-  }
-  if (!/[!@#$%^&*()_+\-=\[\]{}|;:,.<>?]/.test(pass)) {
-    showError("Password must contain at least one special character (!@#$ etc)."); return;
-  }
-  if (pass !== confirm) {
-    matchEl.textContent = "❌ Passwords do not match";
-    matchEl.style.color = "#c62828";
-    matchEl.style.display = "block";
-    return;
-  }
-
-  // Success (Phase 02 - no database, show confirmation)
-  matchEl.textContent = "✓ Passwords match!";
-  matchEl.style.color = "#2e7d32";
-  matchEl.style.display = "block";
-
-  window.alert("✅ Account created successfully!\n\nWelcome to RECIPEZ, " + email + "!\n\n(Database connection added in Phase 03)");
-  window.location.href = "index.html";
-}
-
-// Lab 05: Function - toggle password visibility
 function toggleRegPass() {
-  var input = document.getElementById("regPass");
-  var btn   = document.querySelector(".toggle-pwd");
-  if (input.type === "password") {     // Lab 04: if-else
-    input.type = "text";
-    btn.textContent = "🙈";
-  } else {
-    input.type = "password";
-    btn.textContent = "👁";
+  const inp = document.getElementById('regPass');
+  inp.type  = inp.type === 'password' ? 'text' : 'password';
+}
+
+async function doRegister() {
+  const username = document.getElementById('regUser').value.trim();
+  const email    = document.getElementById('regEmail').value.trim();
+  const password = document.getElementById('regPass').value;
+  const confirm  = document.getElementById('regConfirm').value;
+  const errEl    = document.getElementById('regError');
+  const btn      = document.getElementById('regBtn');
+
+  errEl.style.display = 'none';
+
+  // Client-side checks
+  if (username.length < 3) { showErr('Username must be at least 3 characters.'); return; }
+  if (!email.includes('@')) { showErr('Please enter a valid email address.');     return; }
+  if (password.length < 8)  { showErr('Password must be at least 8 characters.'); return; }
+  if (password !== confirm)  { showErr('Passwords do not match.');                 return; }
+
+  btn.disabled    = true;
+  btn.textContent = 'Creating account…';
+
+  try {
+    const result = await apiRegister(username, email, password);
+    if (result.success) {
+      window.location.href = 'login.html?registered=1';
+    } else {
+      showErr(result.error || 'Registration failed.');
+    }
+  } catch (e) {
+    showErr('Could not reach server. Check your connection.');
+  } finally {
+    btn.disabled    = false;
+    btn.textContent = 'Create Account';
+  }
+
+  function showErr(msg) {
+    errEl.textContent   = '❌ ' + msg;
+    errEl.style.display = 'block';
   }
 }
 </script>
-
 </body>
 </html>
